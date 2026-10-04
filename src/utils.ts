@@ -1,4 +1,4 @@
-import { RiskLevel } from "./types";
+import { RiskLevel, Combination } from "./types";
 
 export const riskColor = (risk: RiskLevel): string => {
   switch (risk) {
@@ -10,3 +10,10 @@ export const riskColor = (risk: RiskLevel): string => {
       return "red";
   }
 };
+
+export const checkCombination = (
+  list: Combination[],
+  x: string,
+  y: string
+): Combination | undefined =>
+  list.find((c) => (c.a === x && c.b === y) || (c.a === y && c.b === x));
