@@ -17,4 +17,3 @@ export interface Combination {
   result: CombineResult;
   note: string;
 }
-

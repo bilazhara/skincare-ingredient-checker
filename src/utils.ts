@@ -1,13 +1,18 @@
-import { RiskLevel, Combination } from "./types";
+import { Combination, RiskLevel } from "./types";
 
 export const riskColor = (risk: RiskLevel): string => {
   switch (risk) {
     case "safe":
-      return "green";
+      return "#2E7D32";
+
     case "caution":
-      return "orange";
+      return "#F57C00";
+
     case "avoid":
-      return "red";
+      return "#D32F2F";
+
+    default:
+      return "#777777";
   }
 };
 
@@ -15,5 +20,10 @@ export const checkCombination = (
   list: Combination[],
   x: string,
   y: string
-): Combination | undefined =>
-  list.find((c) => (c.a === x && c.b === y) || (c.a === y && c.b === x));
+): Combination | undefined => {
+  return list.find(
+    (item) =>
+      (item.a === x && item.b === y) ||
+      (item.a === y && item.b === x)
+  );
+};
