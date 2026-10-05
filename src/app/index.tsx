@@ -1,49 +1,78 @@
 import { useState } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { ingredients, combinations } from "../data";
 import { checkCombination } from "../utils";
 import { Ingredient, CombineResult } from "../types";
-import { styles } from "../styles";
+import styles from "../styles";
 
-const resultColor = (r?: CombineResult): string => {
-  if (r === "good") return "#2E7D32";
-  if (r === "caution") return "#F57C00";
-  if (r === "avoid") return "#D32F2F";
-  return "#777777";
-};
-
-const resultLabel = (r?: CombineResult): string => {
-  if (r === "good") return "AMAN DIPAKAI BARENG";
-  if (r === "caution") return "HATI-HATI";
-  if (r === "avoid") return "HINDARI";
-  return "BELUM ADA DATA";
+// custom function: info tampilan hasil
+const getStatus = (r?: CombineResult) => {
+  if (r === "good")
+    return { label: "AMAN DIPAKAI BARENG", icon: "✅", color: "#2E7D32", bg: "#F1F8F1" };
+  if (r === "caution")
+    return { label: "HATI-HATI", icon: "⚠️", color: "#F57C00", bg: "#FFF8EE" };
+  if (r === "avoid")
+    return { label: "HINDARI", icon: "❌", color: "#D32F2F", bg: "#FDF1F1" };
+  return { label: "BELUM ADA DATA", icon: "❔", color: "#777777", bg: "#F5F5F5" };
 };
 
 export default function Index() {
-  const [first, setFirst] = useState<string | null>(null);
-  const [second, setSecond] = useState<string | null>(null);
-  const [checked, setChecked] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selected1, setSelected1] = useState<string | null>(null);
+  const [selected2, setSelected2] = useState<string | null>(null);
+  const [isResultMode, setIsResultMode] = useState(false);
+
+  const filteredIngredients = ingredients.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const isCekDisabled = !selected1 || !selected2;
 
   const result =
-    first && second ? checkCombination(combinations, first, second) : undefined;
+    selected1 && selected2
+      ? checkCombination(combinations, selected1, selected2)
+      : undefined;
+  const status = getStatus(result?.result);
 
-  const pick = (name: string) => {
-    setChecked(false);
-    if (!first) setFirst(name);
-    else if (!second && name !== first) setSecond(name);
+  const handleSelectIngredient = (name: string) => {
+    if (selected1 === name) return setSelected1(null);
+    if (selected2 === name) return setSelected2(null);
+    if (!selected1) setSelected1(name);
+    else if (!selected2) setSelected2(name);
   };
 
-  const reset = () => {
-    setFirst(null);
-    setSecond(null);
-    setChecked(false);
+  const handleCheck = () => setIsResultMode(true);
+
+  const handleReset = () => {
+    setSelected1(null);
+    setSelected2(null);
+    setSearch("");
+    setIsResultMode(false);
   };
 
-  const renderChip = (item: Ingredient) => (
-    <Pressable key={item.id} style={styles.chip} onPress={() => pick(item.name)}>
-      <Text style={styles.chipText}>{item.name}</Text>
-    </Pressable>
-  );
+  // custom function pembuat komponen
+  const renderTag = (item: Ingredient) => {
+    const isSelected = selected1 === item.name || selected2 === item.name;
+    return (
+      <TouchableOpacity
+        key={item.id}
+        style={[styles.tag, isSelected && styles.tagSelected]}
+        onPress={() => handleSelectIngredient(item.name)}
+        activeOpacity={0.7}
+      >
+        <Text style={[styles.tagText, isSelected && styles.tagTextSelected]}>
+          [ {item.name} ]
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -52,15 +81,12 @@ export default function Index() {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.cardContainer}>
-          {/* Judul Aplikasi */}
           <Text style={styles.title}>Skincare Ingredient Checker</Text>
 
-          {!isResultMode || !status ? (
+          {!isResultMode ? (
             <>
-              {/* Subtitle Instruksi */}
               <Text style={styles.subtitle}>Pilih 2 bahan untuk dicek</Text>
 
-              {/* Kolom Pencarian */}
               <View style={styles.searchBox}>
                 <TextInput
                   style={styles.searchInput}
@@ -71,53 +97,25 @@ export default function Index() {
                 />
               </View>
 
-              {/* Status Bahan Terpilih */}
               <View style={styles.selectedSection}>
                 <Text style={styles.selectedText}>
-                  Bahan 1:{' '}
+                  Bahan 1:{" "}
                   <Text style={styles.boldText}>
-                    {selected1 || '(belum dipilih)'}
+                    {selected1 || "(belum dipilih)"}
                   </Text>
                 </Text>
-
                 <Text style={styles.selectedText}>
-                  Bahan 2:{' '}
+                  Bahan 2:{" "}
                   <Text style={styles.boldText}>
-                    {selected2 || '(belum dipilih)'}
+                    {selected2 || "(belum dipilih)"}
                   </Text>
                 </Text>
               </View>
 
-              {/* Daftar Tag Bahan */}
               <View style={styles.tagsContainer}>
-                {filteredIngredients.map((item) => {
-                  const isSelected =
-                    selected1 === item.name || selected2 === item.name;
-
-                  return (
-                    <TouchableOpacity
-                      key={item.id}
-                      style={[
-                        styles.tag,
-                        isSelected && styles.tagSelected,
-                      ]}
-                      onPress={() => handleSelectIngredient(item.name)}
-                      activeOpacity={0.7}
-                    >
-                      <Text
-                        style={[
-                          styles.tagText,
-                          isSelected && styles.tagTextSelected,
-                        ]}
-                      >
-                        [ {item.name} ]
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
+                {filteredIngredients.map(renderTag)}
               </View>
 
-              {/* Tombol Cek */}
               <TouchableOpacity
                 style={[
                   styles.checkButton,
@@ -133,13 +131,12 @@ export default function Index() {
                     isCekDisabled && styles.checkButtonTextDisabled,
                   ]}
                 >
-                  [         CEK         ]
+                  [ CEK ]
                 </Text>
               </TouchableOpacity>
             </>
           ) : (
             <>
-              {/* Status Bahan yang Dicek */}
               <View
                 style={[
                   styles.selectedSection,
@@ -147,35 +144,22 @@ export default function Index() {
                 ]}
               >
                 <Text style={styles.selectedText}>
-                  Bahan 1:{' '}
-                  <Text style={styles.boldText}>{selected1}</Text>
+                  Bahan 1: <Text style={styles.boldText}>{selected1}</Text>
                 </Text>
-
                 <Text style={styles.selectedText}>
-                  Bahan 2:{' '}
-                  <Text style={styles.boldText}>{selected2}</Text>
+                  Bahan 2: <Text style={styles.boldText}>{selected2}</Text>
                 </Text>
               </View>
 
-              {/* Kotak Hasil Cek Sesuai Sketsa 2 */}
               <View
                 style={[
                   styles.resultCard,
-                  {
-                    borderLeftColor: status.borderColor,
-                    backgroundColor: status.bgColor,
-                  },
+                  { borderLeftColor: status.color, backgroundColor: status.bg },
                 ]}
               >
                 <View style={styles.resultHeader}>
                   <Text style={styles.resultIcon}>{status.icon}</Text>
-
-                  <Text
-                    style={[
-                      styles.resultLabel,
-                      { color: status.borderColor },
-                    ]}
-                  >
+                  <Text style={[styles.resultLabel, { color: status.color }]}>
                     {status.label}
                   </Text>
                 </View>
@@ -183,27 +167,22 @@ export default function Index() {
                 <Text style={styles.resultIngredients}>
                   {selected1} + {selected2}
                 </Text>
-
-                <Text style={styles.resultNote}>{status.note}</Text>
+                <Text style={styles.resultNote}>
+                  {result ? result.note : "Kombinasi ini belum tersedia."}
+                </Text>
               </View>
 
-              {/* Tombol Cek Ulang / Kembali */}
               <TouchableOpacity
-                style={[
-                  styles.checkButton,
-                  { marginTop: 24 },
-                ]}
+                style={[styles.checkButton, { marginTop: 24 }]}
                 onPress={handleReset}
                 activeOpacity={0.8}
               >
-                <Text style={styles.checkButtonText}>
-                  [     CEK LAGI / RESET     ]
-                </Text>
+                <Text style={styles.checkButtonText}>[ CEK LAGI / RESET ]</Text>
               </TouchableOpacity>
             </>
           )}
         </View>
-      )}
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
