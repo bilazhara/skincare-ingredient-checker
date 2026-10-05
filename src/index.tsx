@@ -5,7 +5,6 @@ import { checkCombination } from "../utils";
 import { Ingredient, CombineResult } from "../types";
 import { styles } from "../styles";
 
-// custom function: warna hasil (dipakai sebagai inline style)
 const resultColor = (r?: CombineResult): string => {
   if (r === "good") return "#2E7D32";
   if (r === "caution") return "#F57C00";
@@ -13,7 +12,6 @@ const resultColor = (r?: CombineResult): string => {
   return "#777777";
 };
 
-// custom function: label hasil
 const resultLabel = (r?: CombineResult): string => {
   if (r === "good") return "AMAN DIPAKAI BARENG";
   if (r === "caution") return "HATI-HATI";
@@ -41,7 +39,6 @@ export default function Index() {
     setChecked(false);
   };
 
-  // custom function pembuat komponen
   const renderChip = (item: Ingredient) => (
     <Pressable key={item.id} style={styles.chip} onPress={() => pick(item.name)}>
       <Text style={styles.chipText}>{item.name}</Text>
