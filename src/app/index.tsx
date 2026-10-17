@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { ingredients, combinations } from "../data";
 import { checkCombination } from "../utils";
 import { Ingredient, CombineResult } from "../types";
@@ -28,6 +29,7 @@ export default function Index() {
   const [selected1, setSelected1] = useState<string | null>(null);
   const [selected2, setSelected2] = useState<string | null>(null);
   const [isResultMode, setIsResultMode] = useState(false);
+  const router = useRouter();
 
   const filteredIngredients = ingredients.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
@@ -133,6 +135,15 @@ export default function Index() {
                 >
                   [ CEK ]
                 </Text>
+              </TouchableOpacity>
+
+              {/* tombol navigasi ke halaman explore */}
+              <TouchableOpacity
+                style={[styles.checkButton, { marginTop: 12 }]}
+                onPress={() => router.push("/explore")}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.checkButtonText}>[ LIHAT DAFTAR BAHAN ]</Text>
               </TouchableOpacity>
             </>
           ) : (
