@@ -1,4 +1,4 @@
-import { Ingredient, Combination } from "./types";
+import { Combination, Ingredient } from "./types";
 
 export const ingredients: Ingredient[] = [
   {
@@ -130,5 +130,76 @@ export const combinations: Combination[] = [
     b: "Salicylic Acid",
     result: "caution",
     note: "Eksfoliasi berlebihan, jangan sekaligus.",
+  },
+
+  {
+    id: "c8",
+    a: "Vitamin C",
+    b: "Glycolic Acid",
+    result: "caution",
+    note: "Sama-sama asam, bisa perih. Pakai di waktu berbeda.",
+  },
+  {
+    id: "c9",
+    a: "Vitamin C",
+    b: "Salicylic Acid",
+    result: "caution",
+    note: "Berisiko iritasi, jangan dipakai sekaligus di kulit sensitif.",
+  },
+  {
+    id: "c10",
+    a: "Niacinamide",
+    b: "Salicylic Acid",
+    result: "good",
+    note: "Umumnya aman, niacinamide membantu menenangkan.",
+  },
+  {
+    id: "c11",
+    a: "Niacinamide",
+    b: "Ceramide",
+    result: "good",
+    note: "Cocok, sama-sama membantu skin barrier.",
+  },
+  {
+    id: "c12",
+    a: "Hyaluronic Acid",
+    b: "Ceramide",
+    result: "good",
+    note: "Saling melengkapi untuk kelembapan.",
+  },
+  {
+    id: "c13",
+    a: "Retinol",
+    b: "Hyaluronic Acid",
+    result: "good",
+    note: "Aman, hyaluronic acid membantu mengurangi kering akibat retinol.",
+  },
+  {
+    id: "c14",
+    a: "Retinol",
+    b: "Ceramide",
+    result: "good",
+    note: "Ceramide membantu menjaga skin barrier saat memakai retinol.",
+  },
+  {
+    id: "c15",
+    a: "Retinol",
+    b: "Alcohol Denat.",
+    result: "avoid",
+    note: "Alkohol memperparah kering dan iritasi akibat retinol.",
+  },
+  {
+    id: "c16",
+    a: "Centella Asiatica",
+    b: "Retinol",
+    result: "good",
+    note: "Centella menenangkan kulit yang kemerahan akibat retinol.",
+  },
+  {
+    id: "c17",
+    a: "Glycolic Acid",
+    b: "Niacinamide",
+    result: "caution",
+    note: "Bisa dipakai, tapi mulai pelan karena asam dapat memicu iritasi.",
   },
 ];
