@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
-  View,
   Text,
   TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { ingredients, combinations } from "../data";
-import { checkCombination } from "../utils";
-import { Ingredient, CombineResult } from "../types";
+import { combinations, ingredients } from "../data";
 import styles from "../styles";
+import { CombineResult, Ingredient } from "../types";
+import { checkCombination } from "../utils";
 
 // custom function: info tampilan hasil
 const getStatus = (r?: CombineResult) => {
@@ -26,10 +26,14 @@ const getStatus = (r?: CombineResult) => {
 
 export default function Index() {
   const [search, setSearch] = useState("");
-  const [selected1, setSelected1] = useState<string | null>(null);
-  const [selected2, setSelected2] = useState<string | null>(null);
-  const [isResultMode, setIsResultMode] = useState(false);
-  const router = useRouter();
+const [selected1, setSelected1] = useState<string | null>(null);
+const [selected2, setSelected2] = useState<string | null>(null);
+const [isResultMode, setIsResultMode] = useState(false);
+const [result, setResult] = useState<
+  ReturnType<typeof checkCombination>
+>(undefined);
+
+const router = useRouter();
 
   const filteredIngredients = ingredients.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
@@ -37,10 +41,20 @@ export default function Index() {
 
   const isCekDisabled = !selected1 || !selected2;
 
-  const result =
-    selected1 && selected2
-      ? checkCombination(combinations, selected1, selected2)
-      : undefined;
+  useEffect(() => {
+  if (selected1 && selected2) {
+    const hasilKombinasi = checkCombination(
+      combinations,
+      selected1,
+      selected2
+    );
+
+    setResult(hasilKombinasi);
+  } else {
+    setResult(undefined);
+  }
+}, [selected1, selected2]);
+
   const status = getStatus(result?.result);
 
   const handleSelectIngredient = (name: string) => {
@@ -57,6 +71,7 @@ export default function Index() {
     setSelected2(null);
     setSearch("");
     setIsResultMode(false);
+    setResult(undefined);
   };
 
   // custom function pembuat komponen
