@@ -152,13 +152,22 @@ const router = useRouter();
                 </Text>
               </TouchableOpacity>
 
-              {/* tombol navigasi ke halaman explore */}
+              {/* tombol navigasi ke halaman explore (router.push) */}
               <TouchableOpacity
                 style={[styles.checkButton, { marginTop: 12 }]}
                 onPress={() => router.push("/explore")}
                 activeOpacity={0.8}
               >
-                <Text style={styles.checkButtonText}>[ LIHAT DAFTAR BAHAN ]</Text>
+                <Text style={styles.checkButtonText}>[ LIHAT DAFTAR BAHAN (push) ]</Text>
+              </TouchableOpacity>
+
+              {/* tombol navigasi ke halaman explore (router.replace) */}
+              <TouchableOpacity
+                style={[styles.checkButton, { marginTop: 8 }]}
+                onPress={() => router.replace("/explore")}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.checkButtonText}>[ BUKA EXPLORE (replace) ]</Text>
               </TouchableOpacity>
             </>
           ) : (
