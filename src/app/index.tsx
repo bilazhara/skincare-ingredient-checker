@@ -158,7 +158,7 @@ const router = useRouter();
                 onPress={() => router.push("/explore")}
                 activeOpacity={0.8}
               >
-                <Text style={styles.checkButtonText}>[ LIHAT DAFTAR BAHAN (push) ]</Text>
+                <Text style={styles.checkButtonText}>[ LIHAT DETAIL BAHAN ]</Text>
               </TouchableOpacity>
 
               {/* tombol navigasi ke halaman explore (router.replace) */}
@@ -167,7 +167,7 @@ const router = useRouter();
                 onPress={() => router.replace("/explore")}
                 activeOpacity={0.8}
               >
-                <Text style={styles.checkButtonText}>[ BUKA EXPLORE (replace) ]</Text>
+                <Text style={styles.checkButtonText}>[ BUKA EXPLORE ]</Text>
               </TouchableOpacity>
             </>
           ) : (
