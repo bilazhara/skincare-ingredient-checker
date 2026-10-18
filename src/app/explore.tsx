@@ -35,7 +35,7 @@ export default function Explore() {
           onPress={handleBack}
           activeOpacity={0.8}
         >
-          <Text style={styles.checkButtonText}>[ KEMBALI (back) ]</Text>
+          <Text style={styles.checkButtonText}>[ KEMBALI ]</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
