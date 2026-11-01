@@ -1,18 +1,22 @@
-
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
-import { searchIngredients } from "../services/ingredientApi";
+import {
+  getSearchHistory,
+  saveSearchHistory,
+  searchIngredientsWithRetry,
+} from "../services/ingredientAsync";
+
 import type { Ingredient } from "../types/ingredient";
 
 export default function IngredientSearch() {
@@ -23,6 +27,15 @@ export default function IngredientSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [history, setHistory] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      const saved = await getSearchHistory();
+      setHistory(saved);
+    };
+    loadHistory();
+  }, []);
 
   const handleSearch = async () => {
     const keyword = search.trim();
@@ -39,13 +52,13 @@ export default function IngredientSearch() {
     setHasSearched(true);
 
     try {
-      const data = await searchIngredients(keyword);
+      const data = await searchIngredientsWithRetry(keyword);
       setIngredients(data);
+      await saveSearchHistory(keyword);
+      setHistory(await getSearchHistory());
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Gagal mengambil data dari API."
+        err instanceof Error ? err.message : "Gagal mengambil data dari API.",
       );
     } finally {
       setLoading(false);
@@ -54,26 +67,20 @@ export default function IngredientSearch() {
 
   const renderIngredient = ({ item }: { item: Ingredient }) => (
     <View style={styles.card}>
-      <Text style={styles.ingredientName}>
-        {item.inci_name}
-      </Text>
+      <Text style={styles.ingredientName}>{item.inci_name}</Text>
 
       <Text style={styles.label}>Function:</Text>
       <Text style={styles.value}>
         {item.functions.length > 0
           ? item.functions.join(", ")
-          : item.function ?? "Tidak tersedia"}
+          : (item.function ?? "Tidak tersedia")}
       </Text>
 
       <Text style={styles.label}>CAS Number:</Text>
-      <Text style={styles.value}>
-        {item.cas_number ?? "Tidak tersedia"}
-      </Text>
+      <Text style={styles.value}>{item.cas_number ?? "Tidak tersedia"}</Text>
 
       <Text style={styles.label}>Description:</Text>
-      <Text style={styles.value}>
-        {item.description ?? "Tidak tersedia"}
-      </Text>
+      <Text style={styles.value}>{item.description ?? "Tidak tersedia"}</Text>
 
       <Text style={styles.label}>Restriction:</Text>
       <Text style={styles.value}>
@@ -92,17 +99,13 @@ export default function IngredientSearch() {
           <Text style={styles.backText}>← KEMBALI</Text>
         </TouchableOpacity>
 
-        <Text style={styles.title}>
-          Ingredient Information
-        </Text>
+        <Text style={styles.title}>Ingredient Information</Text>
 
         <Text style={styles.subtitle}>
           Cari informasi bahan skincare dari External API.
         </Text>
 
-        <Text style={styles.source}>
-          Data Source: CosIng Checker API
-        </Text>
+        <Text style={styles.source}>Data Source: CosIng Checker API</Text>
       </View>
 
       <View style={styles.searchContainer}>
@@ -118,31 +121,39 @@ export default function IngredientSearch() {
         />
 
         <TouchableOpacity
-          style={[
-            styles.searchButton,
-            loading && styles.disabledButton,
-          ]}
+          style={[styles.searchButton, loading && styles.disabledButton]}
           onPress={handleSearch}
           disabled={loading}
         >
-          <Text style={styles.buttonText}>
-            [ CARI INGREDIENT ]
-          </Text>
+          <Text style={styles.buttonText}>[ CARI INGREDIENT ]</Text>
         </TouchableOpacity>
       </View>
+
+      {history.length > 0 && (
+        <View style={styles.historyContainer}>
+          <Text style={styles.historyTitle}>Riwayat pencarian:</Text>
+          <View style={styles.historyRow}>
+            {history.map((item) => (
+              <TouchableOpacity
+                key={item}
+                style={styles.historyChip}
+                onPress={() => setSearch(item)}
+              >
+                <Text style={styles.historyText}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
 
       {loading && (
         <View style={styles.messageContainer}>
           <ActivityIndicator size="large" color="#438A5E" />
-          <Text style={styles.infoText}>
-            Mengambil data dari API...
-          </Text>
+          <Text style={styles.infoText}>Mengambil data dari API...</Text>
         </View>
       )}
 
-      {!!error && (
-        <Text style={styles.errorText}>{error}</Text>
-      )}
+      {!!error && <Text style={styles.errorText}>{error}</Text>}
 
       {!loading && !error && hasSearched && (
         <Text style={styles.resultCount}>
@@ -151,14 +162,11 @@ export default function IngredientSearch() {
         </Text>
       )}
 
-      {!loading &&
-        !error &&
-        hasSearched &&
-        ingredients.length === 0 && (
-          <Text style={styles.infoText}>
-            Tidak ada bahan yang cocok dengan pencarian.
-          </Text>
-        )}
+      {!loading && !error && hasSearched && ingredients.length === 0 && (
+        <Text style={styles.infoText}>
+          Tidak ada bahan yang cocok dengan pencarian.
+        </Text>
+      )}
 
       <FlatList
         data={ingredients}
@@ -168,8 +176,8 @@ export default function IngredientSearch() {
         keyboardShouldPersistTaps="handled"
         ListFooterComponent={
           <Text style={styles.footer}>
-            Informasi ingredient bukan merupakan diagnosis
-            medis atau jaminan keamanan penggunaan produk.
+            Informasi ingredient bukan merupakan diagnosis medis atau jaminan
+            keamanan penggunaan produk.
           </Text>
         }
       />
@@ -178,6 +186,31 @@ export default function IngredientSearch() {
 }
 
 const styles = StyleSheet.create({
+  historyContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  historyTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#438A5E",
+    marginBottom: 6,
+  },
+  historyRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  historyChip: {
+    backgroundColor: "#E4F1E6",
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  historyText: {
+    fontSize: 12,
+    color: "#285B38",
+  },
   container: {
     flex: 1,
     backgroundColor: "#F5F9F5",
