@@ -1,9 +1,63 @@
 import {
-    Ingredient,
-    IngredientApiResponse,
+  Ingredient,
+  IngredientApiResponse,
 } from "../types/ingredient";
 
 const BASE_URL = "https://cosingchecker.com/api/v1";
+
+/**
+ * Validasi keyword menggunakan Promise.resolve() dan Promise.reject()
+ */
+export function validateIngredientKeyword(keyword: string): Promise<string> {
+  const trimmed = keyword.trim();
+  if (!trimmed) {
+    return Promise.reject(new Error("Keyword pencarian tidak boleh kosong."));
+  }
+  return Promise.resolve(trimmed);
+}
+
+/**
+ * MENGGUNAKAN FUNGSI new Promise(), resolve(), reject(), DAN .then()
+ * Mengambil data ingredient dari CosIng Checker API.
+ */
+export function searchIngredientsWithPromise(
+  query: string
+): Promise<Ingredient[]> {
+  return new Promise((resolve, reject) => {
+    const keyword = query.trim();
+
+    if (!keyword) {
+      // Input kosong: panggil reject()
+      return reject(new Error("Keyword pencarian tidak boleh kosong."));
+    }
+
+    fetch(`${BASE_URL}/ingredients/?q=${encodeURIComponent(keyword)}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `Gagal mengambil data dari server. Status: ${response.status}`
+          );
+        }
+        return response.json();
+      })
+      .then((data: IngredientApiResponse) => {
+        if (!data || !Array.isArray(data.results)) {
+          // Format tidak sesuai: panggil reject()
+          return reject(new Error("Format respons API tidak valid."));
+        }
+        // Berhasil mendapatkan data: panggil resolve()
+        resolve(data.results);
+      })
+      .catch((error: unknown) => {
+        // Terjadi kegagalan jaringan/request: panggil reject()
+        reject(
+          error instanceof Error
+            ? error
+            : new Error("Terjadi kesalahan saat memproses data API.")
+        );
+      });
+  });
+}
 
 export async function searchIngredients(
   query: string

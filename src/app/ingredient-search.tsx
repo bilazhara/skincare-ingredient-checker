@@ -71,7 +71,7 @@ export default function IngredientSearch() {
 
       <Text style={styles.label}>Function:</Text>
       <Text style={styles.value}>
-        {item.functions.length > 0
+        {Array.isArray(item.functions) && item.functions.length > 0
           ? item.functions.join(", ")
           : (item.function ?? "Tidak tersedia")}
       </Text>
@@ -170,7 +170,7 @@ export default function IngredientSearch() {
 
       <FlatList
         data={ingredients}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => (item.id ? `${item.id}-${index}` : index.toString())}
         renderItem={renderIngredient}
         contentContainerStyle={styles.list}
         keyboardShouldPersistTaps="handled"

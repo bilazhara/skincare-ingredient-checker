@@ -29,16 +29,29 @@ export async function searchIngredientsWithRetry(
 
 // PRE-BUILT ASYNC (AsyncStorage): ambil riwayat pencarian
 export async function getSearchHistory(): Promise<string[]> {
-  const raw = await AsyncStorage.getItem(HISTORY_KEY);
-  return raw ? (JSON.parse(raw) as string[]) : [];
+  try {
+    const raw = await AsyncStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error("Error reading search history:", error);
+    return [];
+  }
 }
 
 // PRE-BUILT ASYNC (AsyncStorage): simpan riwayat (maks 10, tanpa duplikat)
 export async function saveSearchHistory(keyword: string): Promise<void> {
-  const history = await getSearchHistory();
-  const updated = [
-    keyword,
-    ...history.filter((item) => item !== keyword),
-  ].slice(0, 10);
-  await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+  try {
+    const trimmed = keyword.trim();
+    if (!trimmed) return;
+    const history = await getSearchHistory();
+    const updated = [
+      trimmed,
+      ...history.filter((item) => item.toLowerCase() !== trimmed.toLowerCase()),
+    ].slice(0, 10);
+    await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+  } catch (error) {
+    console.error("Error saving search history:", error);
+  }
 }

@@ -252,6 +252,20 @@ export default function Index() {
                   [ BUKA EXPLORE ]
                 </Text>
               </TouchableOpacity>
+
+              {/* Fitur: Test Promise (.then, resolve, reject) & External API */}
+              <TouchableOpacity
+                style={[
+                  styles.checkButton,
+                  { marginTop: 8 },
+                ]}
+                onPress={() => router.push("/api-test")}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.checkButtonText}>
+                  [ TEST PROMISE & API ]
+                </Text>
+              </TouchableOpacity>
             </>
           ) : (
             <>

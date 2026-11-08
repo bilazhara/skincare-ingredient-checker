@@ -203,3 +203,19 @@ export const combinations: Combination[] = [
     note: "Bisa dipakai, tapi mulai pelan karena asam dapat memicu iritasi.",
   },
 ];
+
+/**
+ * MENGGUNAKAN new Promise(), resolve(), DAN reject()
+ * Mengambil daftar ingredient lokal secara asynchronous.
+ */
+export function getLocalIngredients(): Promise<Ingredient[]> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (Array.isArray(ingredients) && ingredients.length > 0) {
+        resolve(ingredients);
+      } else {
+        reject(new Error("Daftar bahan tidak ditemukan."));
+      }
+    }, 200);
+  });
+}

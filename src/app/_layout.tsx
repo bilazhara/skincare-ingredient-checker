@@ -28,6 +28,22 @@ export default function RootLayout() {
             headerTintColor: '#2E7D32',
           }}
         />
+        <Stack.Screen
+          name="ingredient-search"
+          options={{
+            title: 'Pencarian Bahan API',
+            headerStyle: { backgroundColor: '#F1F8F1' },
+            headerTintColor: '#2E7D32',
+          }}
+        />
+        <Stack.Screen
+          name="api-test"
+          options={{
+            title: 'Test API & Promise',
+            headerStyle: { backgroundColor: '#F1F8F1' },
+            headerTintColor: '#2E7D32',
+          }}
+        />
       </Stack>
     </ThemeProvider>
   );
