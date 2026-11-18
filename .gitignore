@@ -44,3 +44,6 @@ example
 
 # local unzipped folder
 skincare-ingredient-checker-main/
+
+.env
+.env.local
