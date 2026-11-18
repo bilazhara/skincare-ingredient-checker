@@ -188,6 +188,7 @@ export default function Index() {
                 {filteredIngredients.map(renderTag)}
               </View>
 
+              {/* Fitur: Cek Kombinasi Ingredient */}
               <TouchableOpacity
                 style={[
                   styles.checkButton,
@@ -208,7 +209,7 @@ export default function Index() {
                 </Text>
               </TouchableOpacity>
 
-              {/* Fitur baru: External API */}
+              {/* Fitur: External API Ingredient */}
               <TouchableOpacity
                 style={[
                   styles.checkButton,
@@ -239,21 +240,7 @@ export default function Index() {
                 </TouchableOpacity>
               </Link>
 
-              {/* Navigasi menggunakan router.replace */}
-              <TouchableOpacity
-                style={[
-                  styles.checkButton,
-                  { marginTop: 8 },
-                ]}
-                onPress={() => router.replace("/explore")}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.checkButtonText}>
-                  [ BUKA EXPLORE ]
-                </Text>
-              </TouchableOpacity>
-
-              {/* Fitur: Test Promise (.then, resolve, reject) & External API */}
+              {/* Fitur: Test Promise & External API */}
               <TouchableOpacity
                 style={[
                   styles.checkButton,
@@ -264,6 +251,22 @@ export default function Index() {
               >
                 <Text style={styles.checkButtonText}>
                   [ TEST PROMISE & API ]
+                </Text>
+              </TouchableOpacity>
+
+              {/* MODUL 4: Supabase & SecureStore */}
+              <TouchableOpacity
+                style={[
+                  styles.checkButton,
+                  { marginTop: 8 },
+                ]}
+                onPress={() =>
+                  router.push("/supabase-test")
+                }
+                activeOpacity={0.8}
+              >
+                <Text style={styles.checkButtonText}>
+                  [ TEST SUPABASE & SECURESTORE ]
                 </Text>
               </TouchableOpacity>
             </>
