@@ -2,6 +2,7 @@
 import { Link, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -12,6 +13,7 @@ import {
 } from "react-native";
 
 import { combinations, ingredients } from "../data";
+import { useAuth } from "../context/AuthContext";
 import styles from "../styles";
 import type { CombineResult, Ingredient } from "../types";
 import { checkCombination } from "../utils";
@@ -52,6 +54,7 @@ const getStatus = (r?: CombineResult) => {
 
 export default function Index() {
   const router = useRouter();
+  const { user } = useAuth();
 
   const [search, setSearch] = useState("");
   const [selected1, setSelected1] = useState<string | null>(null);
@@ -151,6 +154,30 @@ export default function Index() {
           <Text style={styles.title}>
             Skincare Ingredient Checker
           </Text>
+
+          {user && (
+            <View
+              style={{
+                backgroundColor: "#E8F5E9",
+                borderWidth: 1,
+                borderColor: "#81C784",
+                borderRadius: 6,
+                padding: 10,
+                marginBottom: 16,
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: Platform.OS === "ios" ? "Courier" : "monospace",
+                  color: "#2E7D32",
+                  fontSize: 12,
+                  fontWeight: "bold",
+                }}
+              >
+                👤 Login sebagai: {user.email}
+              </Text>
+            </View>
+          )}
 
           {!isResultMode ? (
             <>
@@ -267,6 +294,22 @@ export default function Index() {
               >
                 <Text style={styles.checkButtonText}>
                   [ TEST SUPABASE & SECURESTORE ]
+                </Text>
+              </TouchableOpacity>
+
+              {/* MODUL 4: Authentication (Register, Login, Logout) */}
+              <TouchableOpacity
+                style={[
+                  styles.checkButton,
+                  { marginTop: 8 },
+                ]}
+                onPress={() =>
+                  router.push("/auth-test")
+                }
+                activeOpacity={0.8}
+              >
+                <Text style={styles.checkButtonText}>
+                  [ MODUL 4: AUTHENTICATION ]
                 </Text>
               </TouchableOpacity>
             </>

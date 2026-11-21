@@ -12,9 +12,14 @@
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
+  ],
+  "exclude": [
+    "skincare-ingredient-checker-main",
+    "node_modules",
+    "dist"
   ]
 }

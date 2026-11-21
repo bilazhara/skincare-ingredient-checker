@@ -46,6 +46,22 @@ export default function RootLayout() {
               headerTintColor: '#2E7D32',
             }}
           />
+          <Stack.Screen
+            name="auth-test"
+            options={{
+              title: 'Fitur Authentication',
+              headerStyle: { backgroundColor: '#F1F8F1' },
+              headerTintColor: '#2E7D32',
+            }}
+          />
+          <Stack.Screen
+            name="supabase-test"
+            options={{
+              title: 'Test Supabase & SecureStore',
+              headerStyle: { backgroundColor: '#F1F8F1' },
+              headerTintColor: '#2E7D32',
+            }}
+          />
         </Stack>
       </ThemeProvider>
     </AuthProvider>
